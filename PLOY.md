@@ -82,18 +82,6 @@ two models (`anthropic/claude-sonnet-5`, `openai/gpt-5.6-terra`) are valid as-is
 `@opennextjs/cloudflare` and `wrangler`, which need their postinstall scripts to
 fetch platform binaries.
 
-## Not changed
-
-- All UI components, the message-part rendering, and the `ask_user`
-  human-in-the-loop flow.
-- The `github_repo` tool — tool calling works the same through Ploy AI.
-- Request validation, the model allowlist, output-token and step caps.
-
-## Requirements
-
-Ploy AI requires a **Pro plan** on the organization; requests from free-plan
-organizations are rejected with a 403.
-
 ## 7. `__name is not defined` workaround
 
 Ploy builds the Next.js server with `opennextjs-cloudflare` + `wrangler`, and
@@ -108,3 +96,15 @@ wrong theme.
 before that script runs. This is a bundler-level issue affecting any
 `opennextjs-cloudflare` app that inlines stringified functions, not something
 specific to this template.
+
+## Not changed
+
+- All UI components, the message-part rendering, and the `ask_user`
+  human-in-the-loop flow.
+- The `github_repo` tool — tool calling works the same through Ploy AI.
+- Request validation, the model allowlist, output-token and step caps.
+
+## Requirements
+
+Ploy AI requires a **Pro plan** on the organization; requests from free-plan
+organizations are rejected with a 403.
