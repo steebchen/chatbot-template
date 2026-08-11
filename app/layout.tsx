@@ -28,6 +28,20 @@ export default function RootLayout({
         fontSans.variable
       )}
     >
+      <head>
+        {/*
+          The workerd bundle is built by esbuild with `keepNames: true`, which
+          rewrites function bodies to call `__name(...)`. next-themes inlines
+          its no-flash script via `fn.toString()`, so those calls end up in the
+          HTML and throw `__name is not defined` in the browser — which breaks
+          the pre-hydration theme. Define a no-op before that script runs.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "window.__name = window.__name || ((fn) => fn)",
+          }}
+        />
+      </head>
       <body>
         <ThemeProvider>
           <div className="flex h-svh flex-col">

@@ -93,3 +93,18 @@ fetch platform binaries.
 
 Ploy AI requires a **Pro plan** on the organization; requests from free-plan
 organizations are rejected with a 403.
+
+## 7. `__name is not defined` workaround
+
+Ploy builds the Next.js server with `opennextjs-cloudflare` + `wrangler`, and
+wrangler's esbuild step runs with `keepNames: true`. That rewrites function
+bodies to call `__name(...)`. `next-themes` inlines its no-flash theme script by
+stringifying a function (`fn.toString()`), so those `__name(...)` calls get
+serialized into the HTML and throw `ReferenceError: __name is not defined` in
+the browser — the pre-hydration theme never applies and the page flashes the
+wrong theme.
+
+[`app/layout.tsx`](app/layout.tsx) defines a no-op `window.__name` in `<head>`
+before that script runs. This is a bundler-level issue affecting any
+`opennextjs-cloudflare` app that inlines stringified functions, not something
+specific to this template.
