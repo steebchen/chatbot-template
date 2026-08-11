@@ -30,11 +30,25 @@ export const githubRepo = tool({
 
     try {
       const res = await fetch(`https://api.github.com/repos/${repo}`, {
-        headers: { accept: "application/vnd.github+json" },
+        headers: {
+          accept: "application/vnd.github+json",
+          // GitHub rejects requests without a User-Agent, and rate limits
+          // unauthenticated calls hard from shared/datacenter IPs — set
+          // GITHUB_TOKEN to lift the limit.
+          "user-agent": "chatbot-template",
+          ...(process.env.GITHUB_TOKEN
+            ? { authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+            : {}),
+        },
         signal,
       })
-      if (!res.ok) {
+      if (res.status === 404) {
         return { error: `Could not find repository ${repo}.` }
+      }
+      if (!res.ok) {
+        return {
+          error: `GitHub returned ${res.status} for ${repo}.`,
+        }
       }
       const data = await res.json()
       return {
