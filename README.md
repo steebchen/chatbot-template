@@ -1,19 +1,26 @@
 # Chatbot Template
 
-A minimal chatbot template built with Next.js, the [AI SDK](https://ai-sdk.dev), [shadcn/ui](https://ui.shadcn.com), [shadcn/react](https://ui.shadcn.com/docs/react/message-scroller), [shadcn/typeset](https://ui.shadcn.com/docs/typeset) and the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).
+A minimal chatbot template built with Next.js, the [AI SDK](https://ai-sdk.dev), [shadcn/ui](https://ui.shadcn.com), [shadcn/react](https://ui.shadcn.com/docs/react/message-scroller), [shadcn/typeset](https://ui.shadcn.com/docs/typeset) and [Ploy AI](https://docs.meetploy.com/features/ai).
+
+This is a fork of [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chatbot-template) ported from the Vercel AI Gateway to [Ploy](https://meetploy.com). See [PLOY.md](PLOY.md) for exactly what changed.
 
 ## Features
 
 - Streaming chat with markdown rendering and shadcn/typeset
 - Tool calling example
-- Web search via each provider's built-in search tool
+- Optional web search tool (needs a Tavily API key — see Configuration)
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 
 ## Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fshadcn-ui%2Fchatbot-template&project-name=chatbot-template&repository-name=chatbot-template)
+Push the repository to GitHub and create a project from it in the [Ploy dashboard](https://meetploy.com). The [`ploy.yaml`](ploy.yaml) in the repo root is all the configuration needed:
 
-That's it — no configuration needed. Vercel deployments authenticate to the AI Gateway automatically via OIDC, and usage runs on your team's [AI Gateway credits](https://vercel.com/docs/ai-gateway/pricing).
+```yaml
+kind: nextjs
+ai: true
+```
+
+`ai: true` injects `PLOY_AI_URL` and `PLOY_AI_TOKEN` into the deployment, so the app talks to Ploy's OpenAI-compatible AI gateway without carrying any provider API keys. Usage is billed to your Ploy organization, which needs a Pro plan for AI access.
 
 ## Local development
 
@@ -21,41 +28,34 @@ That's it — no configuration needed. Vercel deployments authenticate to the AI
 pnpm install
 ```
 
-Then give the app a gateway credential, either by pulling an OIDC token from your linked Vercel project:
+Ploy injects the AI credentials in development too, so run the app through the Ploy CLI:
 
 ```bash
-vercel link
-vercel env pull
-```
-
-or by creating an API key in the Vercel dashboard (**AI Gateway → API Keys**) and adding it to `.env.local`:
-
-```bash
-cp .env.example .env.local
-# then set AI_GATEWAY_API_KEY=...
-```
-
-Start the dev server:
-
-```bash
+pnpm ploy login
 pnpm dev
 ```
 
+`pnpm dev` runs `ploy dev`, which starts Next.js with the Ploy bindings attached. If your checkout is not linked to a deployed project and you belong to multiple organizations, set `PLOY_DEV_AI_PROJECT_ID` to a project in the target organization.
+
+To run plain `next dev` instead, use `pnpm dev:next` and set `PLOY_AI_URL` / `PLOY_AI_TOKEN` yourself in `.env.local`.
+
 ## Configuration
 
-| Env var              | Required       | Description                                                  |
-| -------------------- | -------------- | ------------------------------------------------------------ |
-| `AI_GATEWAY_API_KEY` | Local dev only | AI Gateway API key. Not needed on Vercel deployments (OIDC). |
+| Env var             | Required | Description                                                                             |
+| ------------------- | -------- | --------------------------------------------------------------------------------------- |
+| `PLOY_AI_URL`       | Injected | Ploy AI gateway base URL. Injected automatically by `ai: true`.                          |
+| `PLOY_AI_TOKEN`     | Injected | Per-deployment Ploy AI token. Injected automatically by `ai: true`.                      |
+| `TAVILY_API_KEY`    | No       | Enables the `web_search` tool. Without it the tool is not registered and search is off.  |
 
-The model list lives in [lib/models.ts](lib/models.ts) — the first entry is the default model.
+The model list lives in [lib/models.ts](lib/models.ts) — the first entry is the default model. Model ids use the gateway's `provider/model` format (e.g. `anthropic/claude-sonnet-5`), plus `auto` to let the gateway pick.
 
 ## Security
 
-The `/api/chat` route is **public and unauthenticated** — every request spends your AI Gateway credits. That's fine for a personal demo, but before putting it in front of real traffic you should:
+The `/api/chat` route is **public and unauthenticated** — every request spends your Ploy AI credits. That's fine for a personal demo, but before putting it in front of real traffic you should:
 
-- **Rate limit it.** Add [Vercel Firewall / WAF](https://vercel.com/docs/security/vercel-waf) rules or [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js) so a single client can't drain your credits (denial-of-wallet).
-- **Cap spend.** Set an [AI Gateway spend limit](https://vercel.com/docs/ai-gateway/observability-and-spend/budgets) as a backstop.
-- **Add auth** if the chatbot isn't meant to be public.
+- **Rate limit it.** Add a rate limiter (e.g. [`@upstash/ratelimit`](https://github.com/upstash/ratelimit-js), or Ploy's cache binding) so a single client can't drain your credits (denial-of-wallet).
+- **Cap spend.** Watch AI usage in the Ploy dashboard and keep organization credits bounded as a backstop.
+- **Add auth** if the chatbot isn't meant to be public. [Ploy Auth](https://docs.meetploy.com/features/auth) is one option.
 
 The route already validates the request body, restricts models to [lib/models.ts](lib/models.ts), caps output tokens and step count, and aborts generation on client disconnect — but those bound a single request, not overall volume.
 
@@ -63,7 +63,7 @@ The route already validates the request body, restricts models to [lib/models.ts
 
 - [app/api/chat/route.ts](app/api/chat/route.ts) streams responses with `streamText`
 - [components/chat.tsx](components/chat.tsx) renders the conversation with `useChat` and shadcn chat primitives.
-- [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
+- [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and an optional server-executed web search.
 
 ## Tool parts
 

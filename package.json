@@ -5,17 +5,16 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
+    "dev": "ploy dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev:next": "next dev"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.36",
-    "@ai-sdk/gateway": "^4.0.46",
-    "@ai-sdk/openai": "^4.0.36",
+    "@ai-sdk/openai-compatible": "^3.0.29",
     "@ai-sdk/react": "^4.0.61",
     "@base-ui/react": "^1.7.0",
     "@shadcn/react": "^0.3.0",
@@ -34,6 +33,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@meetploy/cli": "latest",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

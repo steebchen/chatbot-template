@@ -2,27 +2,23 @@ import { type InferUITools, type UIDataTypes, type UIMessage } from "ai"
 
 import { askUser } from "./ask_user"
 import { githubRepo } from "./github_repo"
-import { getWebSearch } from "./web_search"
+import { getWebSearch, webSearch } from "./web_search"
 
 const baseTools = {
   github_repo: githubRepo,
   ask_user: askUser,
+  web_search: webSearch,
 }
 
-export function getTools(modelId: string) {
-  const webSearch = getWebSearch(modelId)
-  return webSearch ? { ...baseTools, web_search: webSearch } : baseTools
+export function getTools() {
+  const search = getWebSearch()
+  return search ? baseTools : { github_repo: githubRepo, ask_user: askUser }
 }
 
 export type ChatUIMessage = UIMessage<
   unknown,
   UIDataTypes,
-  InferUITools<typeof baseTools> & {
-    web_search: {
-      input: { query?: string }
-      output: unknown
-    }
-  }
+  InferUITools<typeof baseTools>
 >
 
 export type ChatMessagePart = ChatUIMessage["parts"][number]

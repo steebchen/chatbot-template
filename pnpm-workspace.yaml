@@ -4,3 +4,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  # Ploy builds the app with opennextjs-cloudflare + wrangler, which need their
+  # postinstall scripts to fetch the workerd/esbuild binaries.
+  esbuild: true
+  workerd: true

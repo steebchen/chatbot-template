@@ -61,8 +61,8 @@ export function Chat({ models }: { models: GatewayModel[] }) {
             <EmptyHeader>
               <EmptyTitle>What can I help with?</EmptyTitle>
               <EmptyDescription>
-                Pick a model and start chatting. Responses stream through the
-                Vercel AI Gateway.
+                Pick a model and start chatting. Responses stream through Ploy
+                AI.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>

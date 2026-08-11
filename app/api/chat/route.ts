@@ -7,6 +7,7 @@ import {
   validateUIMessages,
 } from "ai"
 
+import { ployAI } from "@/lib/ai"
 import { DEFAULT_MODEL, isModelAllowed } from "@/lib/models"
 import { getTools, type ChatUIMessage } from "@/tools"
 
@@ -14,10 +15,9 @@ export const maxDuration = 30
 
 const MAX_OUTPUT_TOKENS = 8192
 
-// This endpoint is public and spends your AI Gateway credits on every request.
-// Before exposing it to real traffic, add a rate limit (e.g. Vercel Firewall /
-// WAF or @upstash/ratelimit), authentication, and an AI Gateway spend limit.
-// See the README "Security" section.
+// This endpoint is public and spends your Ploy AI credits on every request.
+// Before exposing it to real traffic, add a rate limit, authentication, and a
+// spend cap on your Ploy organization. See the README "Security" section.
 export async function POST(req: Request) {
   let body: unknown
   try {
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const tools = getTools(modelId)
+  const tools = getTools()
 
   // Validate the shape of every message and tool part before trusting it.
   let messages: ChatUIMessage[]
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: modelId,
+    model: ployAI(modelId),
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: isStepCount(5),
