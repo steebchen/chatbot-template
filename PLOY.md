@@ -76,13 +76,7 @@ two models (`anthropic/claude-sonnet-5`, `openai/gpt-5.6-terra`) are valid as-is
 `pnpm dev:next` still runs plain `next dev` if you'd rather set `PLOY_AI_URL` /
 `PLOY_AI_TOKEN` yourself. `@meetploy/cli` was added as a dev dependency.
 
-## 6. `pnpm-workspace.yaml`
-
-`esbuild` and `workerd` were added to `allowBuilds` — Ploy's build step installs
-`@opennextjs/cloudflare` and `wrangler`, which need their postinstall scripts to
-fetch platform binaries.
-
-## 7. `__name is not defined` workaround
+## 6. `__name is not defined` workaround
 
 Ploy builds the Next.js server with `opennextjs-cloudflare` + `wrangler`, and
 wrangler's esbuild step runs with `keepNames: true`. That rewrites function
