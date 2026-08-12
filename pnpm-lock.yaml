@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
-      '@ai-sdk/openai-compatible':
-        specifier: ^3.0.29
-        version: 3.0.29(zod@4.4.3)
+      '@ai-sdk/anthropic':
+        specifier: ^4.0.36
+        version: 4.0.36(zod@4.4.3)
+      '@ai-sdk/gateway':
+        specifier: ^4.0.46
+        version: 4.0.46(zod@4.4.3)
+      '@ai-sdk/openai':
+        specifier: ^4.0.36
+        version: 4.0.36(zod@4.4.3)
       '@ai-sdk/react':
         specifier: ^4.0.61
         version: 4.0.61(react@19.2.4)(zod@4.4.3)
@@ -62,7 +68,7 @@ importers:
     devDependencies:
       '@meetploy/cli':
         specifier: latest
-        version: 1.44.1
+        version: 1.46.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.3
@@ -99,6 +105,12 @@ importers:
 
 packages:
 
+  '@ai-sdk/anthropic@4.0.36':
+    resolution: {integrity: sha512-Wg5jfray0X4+qkrr73GZ7U7K2JNGx+S+rNY9LorVlXhkhTqnvtNLYWRA1WxSxlCDCw3yjRCJdL9kyc+b7naAog==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/gateway@4.0.46':
     resolution: {integrity: sha512-LIAO6kAG8fpXQb9L0iwPk1FIbXftvqnyC56v5NEAzeWTeL8fUsy/Hx86VPBTWEDFdwbVprjWifJOAqS6AOj3mA==}
     engines: {node: '>=22'}
@@ -111,20 +123,14 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai-compatible@3.0.29':
-    resolution: {integrity: sha512-mkTkrdpfkV93ihTV3cRIhLpYxQ+cXzBGnrGXXfuQj4wfesCZxYbbyPnCsxYv1ssDt7pGDnrz8RQmpeOqDlAy0g==}
+  '@ai-sdk/openai@4.0.36':
+    resolution: {integrity: sha512-wHJNArBdjJPXb8GXcA+FslbRt+7qIE1KoHSAVi+CeBFidinVrTVBZKFMJz3mNZMj8YILBMl/VIvTD/oGFjX6/g==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
   '@ai-sdk/provider-utils@5.0.25':
     resolution: {integrity: sha512-xscPPHCSjCHWrdhai25sbHCJeKNLW/3D1uSpUZa4cEtTKXA8OnPQ3+Rfu1SmM5Ea/Mf8Dfn3cllw9zeMzo/zFA==}
-    engines: {node: '>=22'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/provider-utils@5.0.26':
-    resolution: {integrity: sha512-0mqhqx+Dcv+msI84+zkbLXmnCHb/mpkYJ9DU3HBvB1px+UjFQss4lLZqRCSzJ0w3NxwQk4Ishk7cP0r8wEQD5w==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -916,8 +922,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@meetploy/cli@1.44.1':
-    resolution: {integrity: sha512-r27mni+l/LjT8T4VOD06u6Sae6u4E8IImf5BCpJ6gkVi7ryymAP6pi5v+bHc8O4hbA8cmAY+V+WUcavH6WzfyQ==}
+  '@meetploy/cli@1.46.0':
+    resolution: {integrity: sha512-bS+PUrHuuONI/7xmjtKmEBJYS+syoMtUlS+1dE/4t2L2zWdRmMZFgOY3PjTCyQ5tcImqLlHrgvkf204F24Mqog==}
     hasBin: true
 
   '@modelcontextprotocol/sdk@1.30.0':
@@ -3832,6 +3838,12 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@4.0.36(zod@4.4.3)':
+    dependencies:
+      '@ai-sdk/provider': 4.0.7
+      '@ai-sdk/provider-utils': 5.0.25(zod@4.4.3)
+      zod: 4.4.3
+
   '@ai-sdk/gateway@4.0.46(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.7
@@ -3846,22 +3858,13 @@ snapshots:
       pkce-challenge: 5.0.1
       zod: 4.4.3
 
-  '@ai-sdk/openai-compatible@3.0.29(zod@4.4.3)':
+  '@ai-sdk/openai@4.0.36(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.7
-      '@ai-sdk/provider-utils': 5.0.26(zod@4.4.3)
+      '@ai-sdk/provider-utils': 5.0.25(zod@4.4.3)
       zod: 4.4.3
 
   '@ai-sdk/provider-utils@5.0.25(zod@4.4.3)':
-    dependencies:
-      '@ai-sdk/provider': 4.0.7
-      '@standard-schema/spec': 1.1.0
-      '@workflow/serde': 4.1.0
-      eventsource-parser: 3.1.0
-      undici: 7.29.0
-      zod: 4.4.3
-
-  '@ai-sdk/provider-utils@5.0.26(zod@4.4.3)':
     dependencies:
       '@ai-sdk/provider': 4.0.7
       '@standard-schema/spec': 1.1.0
@@ -4528,7 +4531,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@meetploy/cli@1.44.1':
+  '@meetploy/cli@1.46.0':
     dependencies:
       '@hono/node-server': 1.19.17(hono@4.13.1)
       chokidar: 4.0.3

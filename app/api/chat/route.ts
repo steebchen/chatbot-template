@@ -7,7 +7,6 @@ import {
   validateUIMessages,
 } from "ai"
 
-import { ployAI } from "@/lib/ai"
 import { DEFAULT_MODEL, isModelAllowed } from "@/lib/models"
 import { getTools, type ChatUIMessage } from "@/tools"
 
@@ -36,7 +35,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const tools = getTools()
+  const tools = getTools(modelId)
 
   // Validate the shape of every message and tool part before trusting it.
   let messages: ChatUIMessage[]
@@ -51,7 +50,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: ployAI(modelId),
+    model: modelId,
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: isStepCount(5),
