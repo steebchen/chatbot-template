@@ -28,6 +28,16 @@ export default function RootLayout({
         fontSans.variable
       )}
     >
+      <head>
+        {/* The worker bundle is built with esbuild's keepNames, which rewrites
+            function bodies to call __name(). next-themes inlines its no-flash
+            script via fn.toString(), so those calls reach the browser. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "window.__name = window.__name || ((fn) => fn)",
+          }}
+        />
+      </head>
       <body>
         <ThemeProvider>
           <div className="flex h-svh flex-col">

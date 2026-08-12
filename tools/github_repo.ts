@@ -30,7 +30,12 @@ export const githubRepo = tool({
 
     try {
       const res = await fetch(`https://api.github.com/repos/${repo}`, {
-        headers: { accept: "application/vnd.github+json" },
+        // workerd sends no User-Agent by default and GitHub rejects requests
+        // without one, unlike Node's fetch.
+        headers: {
+          accept: "application/vnd.github+json",
+          "user-agent": "chatbot-template",
+        },
         signal,
       })
       if (!res.ok) {
