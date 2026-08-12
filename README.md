@@ -8,7 +8,7 @@ This is a fork of [shadcn-ui/chatbot-template](https://github.com/shadcn-ui/chat
 
 - Streaming chat with markdown rendering and shadcn/typeset
 - Tool calling example
-- Optional web search tool (needs a Tavily API key — see Configuration)
+- Web search via each provider's built-in search tool
 - Human-in-the-loop questionnaire. The model can ask clarifying questions, answered with the shadcn questionnaire component
 
 ## Deploy
@@ -41,11 +41,10 @@ To run plain `next dev` instead, use `pnpm dev:next` and set `PLOY_AI_URL` / `PL
 
 ## Configuration
 
-| Env var             | Required | Description                                                                             |
-| ------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `PLOY_AI_URL`       | Injected | Ploy AI gateway base URL. Injected automatically by `ai: true`.                          |
-| `PLOY_AI_TOKEN`     | Injected | Per-deployment Ploy AI token. Injected automatically by `ai: true`.                      |
-| `TAVILY_API_KEY`    | No       | Enables the `web_search` tool. Without it the tool is not registered and search is off.  |
+| Env var         | Required | Description                                                         |
+| --------------- | -------- | ------------------------------------------------------------------- |
+| `PLOY_AI_URL`   | Injected | Ploy AI gateway base URL. Injected automatically by `ai: true`.     |
+| `PLOY_AI_TOKEN` | Injected | Per-deployment Ploy AI token. Injected automatically by `ai: true`. |
 
 The model list lives in [lib/models.ts](lib/models.ts) — the first entry is the default model. Model ids use the gateway's `provider/model` format (e.g. `anthropic/claude-sonnet-5`), plus `auto` to let the gateway pick.
 
@@ -63,19 +62,19 @@ The route already validates the request body, restricts models to [lib/models.ts
 
 - [app/api/chat/route.ts](app/api/chat/route.ts) streams responses with `streamText`
 - [components/chat.tsx](components/chat.tsx) renders the conversation with `useChat` and shadcn chat primitives.
-- [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and an optional server-executed web search.
+- [tools/](tools) defines the tools — one file per tool (the filename is the model-facing tool name), composed in [tools/index.ts](tools/index.ts): a server-executed GitHub repo lookup, the interactive `ask_user` questionnaire, and provider-native web search.
 
 ## Tool parts
 
 Assistant messages are a list of typed parts. [components/chat-message.tsx](components/chat-message.tsx) switches on `part.type` and delegates each one to a component in [components/parts/](components/parts):
 
-| Part type          | Component                                                          | Renders                                                                                                                                       |
-| ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`             | [text-part.tsx](components/parts/text-part.tsx)                   | Markdown via react-markdown and shadcn/typeset.                                                                                                |
-| `tool-github_repo` | [github-repo-part.tsx](components/parts/github-repo-part.tsx)     | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                             |
-| `tool-web_search`  | [web-search-part.tsx](components/parts/web-search-part.tsx)       | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                     |
-| `tool-ask_user`    | [ask-user-part.tsx](components/parts/ask-user-part.tsx)           | The answered questions inline. Pending questions render in [question-card.tsx](components/question-card.tsx), pinned to the scroller bottom.   |
-| `source-url`       | [sources-part.tsx](components/parts/sources-part.tsx)             | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                         |
+| Part type          | Component                                                     | Renders                                                                                                                                      |
+| ------------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`             | [text-part.tsx](components/parts/text-part.tsx)               | Markdown via react-markdown and shadcn/typeset.                                                                                              |
+| `tool-github_repo` | [github-repo-part.tsx](components/parts/github-repo-part.tsx) | A spinner while the lookup runs, then a linked stat line (stars, forks, language).                                                           |
+| `tool-web_search`  | [web-search-part.tsx](components/parts/web-search-part.tsx)   | A "Searching the web…" status while the search runs, then a persistent "Searched the web" line per search.                                   |
+| `tool-ask_user`    | [ask-user-part.tsx](components/parts/ask-user-part.tsx)       | The answered questions inline. Pending questions render in [question-card.tsx](components/question-card.tsx), pinned to the scroller bottom. |
+| `source-url`       | [sources-part.tsx](components/parts/sources-part.tsx)         | Web search citations, deduped into a "Searched N websites" drawer once the message finishes streaming.                                       |
 
 Tool parts move through states as the stream progresses — `input-streaming` → `input-available` → `output-available` (or `output-error`) — and each component switches on `part.state` to show progress, results, and failures.
 
